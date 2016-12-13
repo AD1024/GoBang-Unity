@@ -1,0 +1,17 @@
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/UnityEngine.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/UnityEditor.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/UnityEngine.Analytics.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/UnityEngine.PlaymodeTestsRunner.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/UnityEngine.HoloLens.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/UnityEngine.VR.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/Mono.Cecil.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/Unity.DataContract.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/CCoderAD/Documents/UnityProjects/GoBang/Temp/bin/Debug/Mono.Cecil.Mdb.dll
