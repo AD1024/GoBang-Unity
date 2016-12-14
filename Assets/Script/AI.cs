@@ -1,221 +1,155 @@
-﻿
-
+﻿using System;
+struct SetPoint{
+	public int pX,pY;
+}
 class AI{
-	const int MaxFiveChainCount = 572;
-
-	bool[,,] _ptable = new bool[Board.CrossCount, Board.CrossCount, MaxFiveChainCount];
-
-	// computer probabilities
-	bool[, ,] _ctable = new bool[Board.CrossCount, Board.CrossCount, MaxFiveChainCount];
-
-	// All winning strategies
-	int[,] _win = new int[2, MaxFiveChainCount];
-
-	// Grade recorder
-	int[,] _cgrades = new int[Board.CrossCount, Board.CrossCount];
-	int[,] _pgrades = new int[Board.CrossCount, Board.CrossCount];
-
-	// Board Recorder
-	int[,] _board = new int[Board.CrossCount, Board.CrossCount];
-
-	int _cgrade, _pgrade;
-	int _icount, _m, _n;
-	int _mat, _nat, _mde, _nde;
+	enum Action{
+		Attack,
+		Defend,
+		Pending
+	}
+	int[,] scoreAI = new int[15,15];
+	int[,] scorePlayer = new int[15, 15];
+	int[,] score = new int[15, 15];
+	int[] playerWeight;
+	int[] AIWeight;
+	int[] dx;
+	int[] dy;
+	ChessType[,] chessBoard = new ChessType[15, 15];
 
 	public AI(){
-		for ( int i = 0;i<Board.CrossCount;i++){
-			for ( int j = 0;j<Board.CrossCount;j++){
-				_pgrades[i, j] = 0;
-				_cgrades[i, j] = 0;
-				_board[i, j] = 0;
-			}
-		}
-		for ( int i = 0;i<Board.CrossCount;i++){
-			for ( int j = 0;j<Board.CrossCount - 4 ;j++){
-				for( int k = 0;k < BoardModel.WinChessCount;k++){
-					_ptable[j + k, i, _icount] = true;
-					_ctable[j + k, i, _icount] = true;
-				}
-
-				_icount++;
-			}
-		}
-
-		//横  
-		for (int i = 0; i < Board.CrossCount; i++){
-			for (int j = 0; j < Board.CrossCount - 4; j++){
-				for (int k = 0; k < BoardModel.WinChessCount; k++){
-					_ptable[i, j + k,  _icount] = true;
-					_ctable[i, j + k,  _icount] = true;
-				}
-
-				_icount++;
-			}
-		}
-
-		// 右斜
-		for (int i = 0; i < Board.CrossCount - 4; i++){
-			for (int j = 0; j < Board.CrossCount - 4; j++){
-				for (int k = 0; k < BoardModel.WinChessCount; k++){
-					_ptable[j+k, i + k, _icount] = true;
-					_ctable[j + k, i + k, _icount] = true;
-				}
-
-				_icount++;
-			}
-		}
-
-		// 左斜
-		for (int i = 0; i < Board.CrossCount - 4; i++){
-			for (int j = Board.CrossCount - 1; j >= 4; j--){
-				for (int k = 0; k < BoardModel.WinChessCount; k++){
-					_ptable[j - k, i + k, _icount] = true;
-					_ctable[j - k, i + k, _icount] = true;
-				}
-
-				_icount++;
-			}
-		}
-
-		for (int i = 0; i < 2; i++){
-			for (int j = 0; j < MaxFiveChainCount; j++){
-				_win[i, j] = 0;
-			}
-		}
-
-		_icount = 0;    
-	}
-
-
-
-
-	void CalcScore(){
-		_cgrade = 0;
-		_pgrade = 0;
-		_board[_m, _n] = 1;
-
-		for (int i = 0; i < MaxFiveChainCount; i++){
-			if (_ctable[_m, _n, i] && _win[0, i] != -1){
-				_win[0, i]++;
-			}
-
-			if (_ptable[_m, _n, i]){
-				_ptable[_m, _n, i] = false;
-				_win[1, i] = -1;
+		playerWeight = new int[]{ 5, 40, 600, 15000, 400000 };
+		AIWeight = new int[]{5, 20, 300, 2000, 100000 };
+		dx = new int[]{1,0,1,1};
+		dy = new int[]{0,1,1,-1};
+		for (int i = 0; i < 15; ++i) {
+			for (int j = 0; j < 15; ++j) {
+				chessBoard [i, j] = ChessType.None;
 			}
 		}
 	}
 
-	void CalcCore(){
-		for (int i = 0; i < Board.CrossCount; i++){
-			for (int j = 0; j < Board.CrossCount; j++){
-				_pgrades[i, j] = 0;
-				if (_board[i, j] == 0){
-					for (int k = 0; k < MaxFiveChainCount; k++){
-						if (_ptable[i, j, k]){
-							switch (_win[1, k])
-							{
-							case 1:
-								_pgrades[i, j] += 5;
-								break;
-							case 2:
-								_pgrades[i, j] += 70;
-								break;
-							case 3:
-								_pgrades[i, j] += 500;
-								break;
-							case 4:
-								_pgrades[i, j] += 20000;
-								break;
+	private void resetScore(){
+		for (int i = 0; i < 15; ++i) {
+			for (int j = 0; j < 15; ++j) {
+				scoreAI [i, j] = 0;
+				scorePlayer [i, j] = 0;
+				score [i, j] = 0;
+			}
+		}
+	}
+
+	private bool validPos(int px,int py){
+		return px >= 0 && px <= 14 && py >= 0 && py <= 14;
+	}
+
+	private void checkCount(int px,int py,int dir,ChessType type,out int val){
+		ChessType cur;
+		int cx, cy;
+		val = 0;
+		for (int i = 0; i <= 4; ++i) {
+			cx = px + dx [dir] * i;
+			cy = py + dy [dir] * i;
+			cur = chessBoard [cx, cy];
+			if (cur == type) {
+				++val;
+			}
+		}
+	}
+
+	public void setChess(int px,int py,ChessType type){
+		chessBoard [px, py] = type;
+	}
+
+	public SetPoint getPos(){
+		SetPoint finalPos = new SetPoint ();
+		resetScore ();
+		int ai, player;
+		int cai, cplayer;
+		for (int x = 0; x < 15; ++x) {
+			for (int y = 0; y < 15; ++y) {
+				for (int k = 0; k < 4; ++k) {
+					if (validPos (x + dx [k] * 4, y + dy [k] * 4)) {
+						ai = player = 0;
+						cai = cplayer = 0;
+						checkCount (x, y, k, ChessType.Black, out cplayer);
+						checkCount (x, y, k, ChessType.White, out cai);
+						if (cplayer != 0 && cai != 0)
+							continue;
+						else if (cplayer == 0) {
+							for (int i = 0; i <= 4; ++i) {
+								if (chessBoard [x + dx [k] * i, y + dy [k] * i] == ChessType.None) {
+									scoreAI [x + dx [k] * i, y + dy [k] * i] += AIWeight [cai];
+									score [x + dx [k] * i, y + dy [k] * i] += AIWeight [cai];
+								}
 							}
-						}
-					}
-
-					_cgrades[i, j] = 0;
-					if (_board[i, j] == 0){  
-						for (int k = 0; k < MaxFiveChainCount; k++){
-							if (_ctable[i, j, k]){
-								switch (_win[0, k]){
-								case 1:
-									_cgrades[i, j] += 5;
-									break;
-								case 2:
-									_cgrades[i, j] += 52;
-									break;
-								case 3:
-									_cgrades[i, j] += 200;
-									break;
-								case 4:
-									_cgrades[i, j] += 10000;
-									break;
+						} else if (cai == 0) {
+							for (int i = 0; i <= 4; ++i) {
+								if (chessBoard [x + dx [k] * i, y + dy [k] * i] == ChessType.None) {
+									scorePlayer [x + dx [k] * i, y + dy [k] * i] += playerWeight [cplayer];
+									score [x + dx [k] * i, y + dy [k] * i] += playerWeight [cplayer];
+								}
+							}
+						} else if (cplayer == 0 && cai == 0) {
+							for (int i = 0; i <= 4; ++i) {
+								if (chessBoard [x + dx [k] * i, y + dy [k] * i] == ChessType.None) {
+									scoreAI [x + dx [k] * i, y + dy [k] * i] += 3;
+									scorePlayer [x + dx [k] * i, y + dy [k] * i] += 3;
+									score [x + dx [k] * i, y + dy [k] * i] += 3;
 								}
 							}
 						}
-
 					}
-
-
 				}
 			}
 		}
-
-	}
-	public void ComputerDo(int playerX, int playerY, out int finalX, out int finalY ){
-		setPlayerPiece(playerX, playerY);
-
-		CalcCore();
-
-		for (int i = 0; i < Board.CrossCount; i++){
-			for (int j = 0; j < Board.CrossCount; j++){
-				if (_board[i, j] == 0){
-					if (_cgrades[i, j] >= _cgrade){
-						_cgrade = _cgrades[i, j];
-						_mat = i;
-						_nat = j;
+		int tmp = -1000;
+		int tmp1 = -1000;
+		int AIsecondMax = -1000;
+		int PlayersecondMax = -1000;
+		int cs = -1000;
+		SetPoint P1 = new SetPoint ();
+		SetPoint P2 = new SetPoint ();
+		SetPoint g_Point = new SetPoint ();
+		Random rand = new Random ();
+		for (int i = 0; i < 15; ++i) {
+			for (int j = 0; j < 15; ++j) {
+				if (chessBoard [i, j] == ChessType.None && score [i, j] > cs) {
+					cs = score [i, j];
+					g_Point.pX = i;
+					g_Point.pY = j;
+				} else if (chessBoard [i, j] == ChessType.None && score [i, j] == cs) {
+					int r = rand.Next () % 10;
+					if (r >= 5) {
+						g_Point.pX = i;
+						g_Point.pY = j;
 					}
-
-					if (_pgrades[i, j] >= _pgrade){
-						_pgrade = _pgrades[i, j];
-						_mde = i;
-						_nde = j;
+				}
+				if (chessBoard [i, j] == ChessType.None && scoreAI [i, j] > tmp) {
+					tmp = scoreAI [i, j];
+					P1.pX = i;
+					P1.pY = j;
+				} else if (chessBoard [i, j] == ChessType.None && scoreAI [i, j] == tmp) {
+					int cg = rand.Next ()%10;
+					if (cg >= 5) {
+						P1.pX = i;
+						P1.pY = j;
 					}
-
+				}
+				if (chessBoard [i, j] == ChessType.None && scorePlayer [i, j] > tmp1) {
+					P2.pX = i;
+					P2.pY = j;
+					tmp1 = scorePlayer [i, j];
 				}
 			}
 		}
-		if (_cgrade >= _pgrade){
-			_m = _mat;
-			_n = _nat;
+		finalPos = tmp1>tmp?P2:P1;
+		int rnd = rand.Next () % 10;
+		if (rnd >= 5) {
+			finalPos = g_Point;
 		}
-		else{
-			_m = _mde;
-			_n = _nde;
-		}
-			
-		CalcScore();
 
-		finalX = _m;
-		finalY = _n;
+		return g_Point;
 	}
-
-	void setPlayerPiece( int playerX, int playerY ){
-		int m = playerX;
-		int n = playerY;
-
-		if ( _board[m, n ] == 0 ){
-			_board[m, n] = 2;
-
-			for( int i = 0;i<MaxFiveChainCount;i++){
-				if ( _ptable[m, n, i ] && _win[1, i] != -1 ){
-					_win[1, i]++;
-				}
-				if (_ctable[m,n,i]){
-					_ctable[m, n, i] = false;
-					_win[0, i] = -1;
-				}
-			}
-		}
-	}
-
 }
 
