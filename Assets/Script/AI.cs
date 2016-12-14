@@ -5,11 +5,6 @@ struct SetPoint{
 	public int pX,pY;
 }
 class AI{
-	enum Action{
-		Attack,
-		Defend,
-		Pending
-	}
 	int[,] scoreAI = new int[15,15];
 	int[,] scorePlayer = new int[15, 15];
 	int[,] score = new int[15, 15];
@@ -38,8 +33,6 @@ class AI{
 	private void resetScore(){
 		for (int i = 0; i < 15; ++i) {
 			for (int j = 0; j < 15; ++j) {
-//				scoreAI [i, j] = 0;
-//				scorePlayer [i, j] = 0;
 				score [i, j] = 0;
 			}
 		}
@@ -153,26 +146,9 @@ class AI{
 						g_Point.pX = i;
 						g_Point.pY = j;
 					}
-				}/*
-				if (chessBoard [i, j] == ChessType.None && scoreAI [i, j] > tmp) {
-					tmp = scoreAI [i, j];
-					P1.pX = i;
-					P1.pY = j;
-				} else if (chessBoard [i, j] == ChessType.None && scoreAI [i, j] == tmp) {
-					int cg = rand.Next ()%10;
-					if (cg >= 5) {
-						P1.pX = i;
-						P1.pY = j;
-					}
 				}
-				if (chessBoard [i, j] == ChessType.None && scorePlayer [i, j] > tmp1) {
-					P2.pX = i;
-					P2.pY = j;
-					tmp1 = scorePlayer [i, j];
-				}*/
 			}
 		}
-		printWeight ();
 		finalPos = g_Point;
 		return finalPos;
 	}
