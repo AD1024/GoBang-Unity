@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Script\AI.cs" />
-     <Compile Include="Assets\Script\AIHard.cs" />
      <Compile Include="Assets\Script\Board.cs" />
      <Compile Include="Assets\Script\BoardModel.cs" />
      <Compile Include="Assets\Script\Cross.cs" />
