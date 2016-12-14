@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+
 struct SetPoint{
 	public int pX,pY;
 }
@@ -12,14 +14,18 @@ class AI{
 	int[,] scorePlayer = new int[15, 15];
 	int[,] score = new int[15, 15];
 	int[] playerWeight;
+	int[] dieAIScore = new int[15];
+	int[] diePlayerScore = new int[15];
 	int[] AIWeight;
 	int[] dx;
 	int[] dy;
 	ChessType[,] chessBoard = new ChessType[15, 15];
 
 	public AI(){
-		playerWeight = new int[]{ 5, 40, 600, 15000, 400000 };
-		AIWeight = new int[]{5, 20, 300, 2000, 100000 };
+		playerWeight = new int[]{ 5, 40, 900, 5000, 200000 };
+		AIWeight = new int[]{5, 20, 500, 4500, 130000 };
+		dieAIScore = new int[]{ 0, -7, -100, -400, 0 };
+		diePlayerScore = new int[]{ 0, -10, -150, -500, 0 };
 		dx = new int[]{1,0,1,1};
 		dy = new int[]{0,1,1,-1};
 		for (int i = 0; i < 15; ++i) {
@@ -32,8 +38,8 @@ class AI{
 	private void resetScore(){
 		for (int i = 0; i < 15; ++i) {
 			for (int j = 0; j < 15; ++j) {
-				scoreAI [i, j] = 0;
-				scorePlayer [i, j] = 0;
+//				scoreAI [i, j] = 0;
+//				scorePlayer [i, j] = 0;
 				score [i, j] = 0;
 			}
 		}
@@ -61,6 +67,32 @@ class AI{
 		chessBoard [px, py] = type;
 	}
 
+	public string int2string(int x){
+		int[] num = new int[100];
+		int cur = 0;
+		while (x>0) {
+			num [cur++] = x % 10;
+			x /= 10;
+		}
+		string ret = "";
+		for (int i = cur - 1; i >= 0; --i) {
+			ret += (char)(num [i] + '0');
+		}
+		return ret;
+	}
+
+	private void printWeight(){
+		string line;
+		for (int i = 0; i < 15; ++i) {
+			line = "";
+			for (int j = 0; j < 15; ++j) {
+				line += int2string (score[i,j]);
+				line += " ";
+			}
+			Debug.Log (i + " " + line);
+		}
+	}
+
 	public SetPoint getPos(){
 		SetPoint finalPos = new SetPoint ();
 		resetScore ();
@@ -70,31 +102,30 @@ class AI{
 			for (int y = 0; y < 15; ++y) {
 				for (int k = 0; k < 4; ++k) {
 					if (validPos (x + dx [k] * 4, y + dy [k] * 4)) {
-						ai = player = 0;
 						cai = cplayer = 0;
 						checkCount (x, y, k, ChessType.Black, out cplayer);
 						checkCount (x, y, k, ChessType.White, out cai);
-						if (cplayer != 0 && cai != 0)
+						if (cplayer != 0 && cai != 0) {
 							continue;
-						else if (cplayer == 0) {
+						}else if (cplayer == 0) {
 							for (int i = 0; i <= 4; ++i) {
 								if (chessBoard [x + dx [k] * i, y + dy [k] * i] == ChessType.None) {
-									scoreAI [x + dx [k] * i, y + dy [k] * i] += AIWeight [cai];
+//									scoreAI [x + dx [k] * i, y + dy [k] * i] += AIWeight [cai];
 									score [x + dx [k] * i, y + dy [k] * i] += AIWeight [cai];
 								}
 							}
 						} else if (cai == 0) {
 							for (int i = 0; i <= 4; ++i) {
 								if (chessBoard [x + dx [k] * i, y + dy [k] * i] == ChessType.None) {
-									scorePlayer [x + dx [k] * i, y + dy [k] * i] += playerWeight [cplayer];
+//									scorePlayer [x + dx [k] * i, y + dy [k] * i] += playerWeight [cplayer];
 									score [x + dx [k] * i, y + dy [k] * i] += playerWeight [cplayer];
 								}
 							}
 						} else if (cplayer == 0 && cai == 0) {
 							for (int i = 0; i <= 4; ++i) {
 								if (chessBoard [x + dx [k] * i, y + dy [k] * i] == ChessType.None) {
-									scoreAI [x + dx [k] * i, y + dy [k] * i] += 3;
-									scorePlayer [x + dx [k] * i, y + dy [k] * i] += 3;
+//									scoreAI [x + dx [k] * i, y + dy [k] * i] += 3;
+//									scorePlayer [x + dx [k] * i, y + dy [k] * i] += 3;
 									score [x + dx [k] * i, y + dy [k] * i] += 3;
 								}
 							}
@@ -105,13 +136,11 @@ class AI{
 		}
 		int tmp = -1000;
 		int tmp1 = -1000;
-		int AIsecondMax = -1000;
-		int PlayersecondMax = -1000;
 		int cs = -1000;
-		SetPoint P1 = new SetPoint ();
-		SetPoint P2 = new SetPoint ();
+//		SetPoint P1 = new SetPoint ();
+//		SetPoint P2 = new SetPoint ();
 		SetPoint g_Point = new SetPoint ();
-		Random rand = new Random ();
+		System.Random rand = new System.Random ();
 		for (int i = 0; i < 15; ++i) {
 			for (int j = 0; j < 15; ++j) {
 				if (chessBoard [i, j] == ChessType.None && score [i, j] > cs) {
@@ -124,7 +153,7 @@ class AI{
 						g_Point.pX = i;
 						g_Point.pY = j;
 					}
-				}
+				}/*
 				if (chessBoard [i, j] == ChessType.None && scoreAI [i, j] > tmp) {
 					tmp = scoreAI [i, j];
 					P1.pX = i;
@@ -140,16 +169,12 @@ class AI{
 					P2.pX = i;
 					P2.pY = j;
 					tmp1 = scorePlayer [i, j];
-				}
+				}*/
 			}
 		}
-		finalPos = tmp1>tmp?P2:P1;
-		int rnd = rand.Next () % 10;
-		if (rnd >= 5) {
-			finalPos = g_Point;
-		}
-
-		return g_Point;
+		printWeight ();
+		finalPos = g_Point;
+		return finalPos;
 	}
 }
 
