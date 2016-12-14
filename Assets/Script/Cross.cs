@@ -10,8 +10,9 @@ public class Cross : MonoBehaviour {
 	public float realX,realY;
 	public MainLoop mainLoop;
 	// Use this for initialization
+
 	void Start () {
-		GetComponent<Button> ().onClick.AddListener (() => {
+		GetComponent<Button> ().onClick.AddListener (delegate(){
 			Debug.Log("Pos:"+posX+" "+posY);
 			mainLoop.OnClick(this);
 		});

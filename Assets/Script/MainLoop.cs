@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using GoBangAI;
+
 public class MainLoop : MonoBehaviour {
 
 	public GameObject WhiteChessPrefab;
@@ -35,7 +35,6 @@ public class MainLoop : MonoBehaviour {
 	Board ChessBoard;
 	BoardModel _ChessBoardModel;
 	AI Computer;
-	AIHard HardComputer = new AIHard ();
 
 	Button btnRestart;
 
@@ -55,6 +54,7 @@ public class MainLoop : MonoBehaviour {
 		_ChessBoardModel.SetChess (place.posX, place.posY, ctype);
 		int win = _ChessBoardModel.CheckLink (place.posX, place.posY,ctype);
 		cnt_step += 1;
+		Computer.setChess (place.posX, place.posY, isBlack ? ChessType.Black : ChessType.White);
 		return win >= 5;
 	}
 
@@ -63,12 +63,14 @@ public class MainLoop : MonoBehaviour {
 		_ChessBoardModel = new BoardModel ();
 		Computer = new AI ();
 		cnt_step = 0;
+		winner = -1;
 		ChessBoard.Reset ();
 	}
 
 	int lastPlayerX,lastPlayerY;
 
 	public void OnClick(Cross cross){
+		Debug.Log ("Click");
 		if (_Status != Status.BlackTurn)
 			return;
 		if (ValidPlace (cross.posX, cross.posY)) {
@@ -111,41 +113,36 @@ public class MainLoop : MonoBehaviour {
 		}
 		return ret;
 	}
+
+	void ShowResult(ChessType type){
+		if (type == ChessType.Black) {
+			StatusText.text = "你赢啦！我的AI太弱啦！";
+			player_win++;
+			player_win_text.text = int2string (player_win);
+		} else {
+			StatusText.text =  "你输啦！连我的AI都打不过\n，您活着还有什么意义呢？";
+			AI_win++;
+			ai_win_text.text = int2string (AI_win);
+		}
+		_Status = Status.Pending;
+	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (_Status == Status.Over) {
-			if (winner == 0) {
-				StatusText.text = "你赢啦！我的AI太弱啦！";
-				player_win++;
-				player_win_text.text = int2string (player_win);
-			} else {
-				StatusText.text =  "你输啦！连我的AI都打不过\n，您活着还有什么意义呢？";
-				AI_win++;
-				ai_win_text.text = int2string (AI_win);
-			}
-			_Status = Status.Pending;
-
-		}
 		if (_Status == Status.Pending)
 			return;
-		/*if (_Status == Status.BlackTurn) {
-			StatusText.text = "你的回合";
-		} else {
-			StatusText.text = "AI的回合";
-		}*/
 		if (cnt_step == 15 * 15) {
 			_Status = Status.Pending;
 			StatusText.text =  "平手！你还是有那么一点微小的水平嘛";
 		}
+		if (winner != -1) {
+			ShowResult (winner == 1?ChessType.White : ChessType.Black);
+		}
 		switch (_Status) {
 		case Status.WhiteTurn:{
 				int posX, posY;
-				Computer.ComputerDo(lastPlayerX,lastPlayerY,out posX,out posY);
-				//Point fin = HardComputer.findBestPoint (_ChessBoardModel.ChessBoardStatus, _ChessBoardModel.ChessBoardColor, 1, 0, 3, 8);
-//				Cross pos = ChessBoard.getCross (fin.X, fin.Y);
-				// Debug.Log ("AI Step:" + pos.posX + " " + pos.posY);
-				if(SetChessToBoard(ChessBoard.getCross(posX,posY),false)){
+				SetPoint fin = Computer.getPos();
+				if(SetChessToBoard(ChessBoard.getCross(fin.pX,fin.pY),false)){
 					_Status = Status.Over;
 					winner = 1;
 				}else{

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 public class Board : MonoBehaviour {
 
 	public GameObject CrossPrefab;
@@ -35,8 +36,6 @@ public class Board : MonoBehaviour {
 				crossObj.transform.localPosition = pos;
 
 				var cross = crossObj.GetComponent<Cross> ();
-				cross.realX = pos.x;
-				cross.realY = pos.y;
 				cross.mainLoop = mainloop;
 				cross.posX = i;
 				cross.posY = j;

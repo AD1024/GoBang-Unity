@@ -16,7 +16,7 @@ public class BoardModel{
 	public const int PlayerColor = 0;
 	public const int AIColor = 1;
 
-	ChessType[,] BoardData = new ChessType[Board.CrossCount,Board.CrossCount];
+	public ChessType[,] BoardData = new ChessType[Board.CrossCount,Board.CrossCount];
 
 	public int[,] ChessBoardStatus = new int[15, 15];
 	public int[,] ChessBoardColor = new int[15, 15];
