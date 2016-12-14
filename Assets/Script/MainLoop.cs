@@ -100,7 +100,7 @@ public class MainLoop : MonoBehaviour {
 		Restart ();
 	}
 
-	string int2string(int x){
+	public string int2string(int x){
 		int[] num = new int[100];
 		int cur = 0;
 		while (x>0) {
