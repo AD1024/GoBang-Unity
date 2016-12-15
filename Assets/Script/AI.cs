@@ -16,9 +16,15 @@ class AI{
 	int[] dy;
 	ChessType[,] chessBoard = new ChessType[15, 15];
 
+<<<<<<< HEAD
+	public AI(){                       //900
+		playerWeight = new int[]{ 5, 40, 800, 8000, 200000 };
+		AIWeight = new int[]{5, 20, 500, 7500, 100000 };
+=======
 	public AI(){
 		playerWeight = new int[]{ 5, 40, 900, 5000, 200000 };
 		AIWeight = new int[]{5, 20, 500, 4500, 130000 };
+>>>>>>> 190e4a35caace403dfba4b152dfd78001425f9e1
 		dieAIScore = new int[]{ 0, -7, -100, -400, 0 };
 		diePlayerScore = new int[]{ 0, -10, -150, -500, 0 };
 		dx = new int[]{1,0,1,1};
