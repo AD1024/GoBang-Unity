@@ -5,9 +5,15 @@ using UnityEngine.UI;
 public class Board : MonoBehaviour {
 
 	public GameObject CrossPrefab;
+<<<<<<< HEAD
+	public const float CrossSize = 42;
+	public const int CrossCount = 15;
+	public const int Size = 580;
+=======
 	public const float CrossSize = 40;
 	public const int CrossCount = 15;
 	public const int Size = 560;
+>>>>>>> 190e4a35caace403dfba4b152dfd78001425f9e1
 	public const int HalfSize = Size >> 1;
 
 	public Dictionary<int,Cross> crossMap = new Dictionary<int,Cross>();
@@ -30,8 +36,13 @@ public class Board : MonoBehaviour {
 				crossObj.transform.SetParent (gameObject.transform);
 				crossObj.transform.localScale = Vector3.one;
 				var pos = crossObj.transform.localPosition;
+<<<<<<< HEAD
+				pos.x = -HalfSize + i * CrossSize-4.25f;
+				pos.y = -HalfSize + j * CrossSize-4.35f;
+=======
 				pos.x = -HalfSize + i * CrossSize;
 				pos.y = -HalfSize + j * CrossSize;
+>>>>>>> 190e4a35caace403dfba4b152dfd78001425f9e1
 				pos.z = 0;
 				crossObj.transform.localPosition = pos;
 
