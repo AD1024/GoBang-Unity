@@ -94,12 +94,9 @@ public class MainLoop : MonoBehaviour {
 		ai_win_text = GameObject.Find ("Canvas/AI_WIN_NUMBER").GetComponent<Text> ();
 		GameObject.Find ("Canvas/btnRestart").GetComponent<Button> ().onClick.AddListener (() => {
 			if(_Status == Status.Pending) Restart();
-<<<<<<< HEAD
 			else if(_Status != Status.Pending){
 				StatusText.text =  "比赛还在进行中！";
 			}
-=======
->>>>>>> 190e4a35caace403dfba4b152dfd78001425f9e1
 		});
 		StatusText = GameObject.Find ("Canvas/status_info").GetComponent<Text> ();
 		player_win_text = GameObject.Find ("Canvas/PLAYER_WIN_NUMBER").GetComponent<Text> ();
@@ -147,11 +144,7 @@ public class MainLoop : MonoBehaviour {
 		switch (_Status) {
 		case Status.WhiteTurn:{
 				int posX, posY;
-<<<<<<< HEAD
 				SetPoint fin = Computer.getPos ();
-=======
-				SetPoint fin = Computer.getPos();
->>>>>>> 190e4a35caace403dfba4b152dfd78001425f9e1
 				if(SetChessToBoard(ChessBoard.getCross(fin.pX,fin.pY),false)){
 					_Status = Status.Over;
 					winner = 1;
